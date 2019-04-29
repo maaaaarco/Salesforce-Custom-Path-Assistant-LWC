@@ -13,12 +13,12 @@ import {
 } from 'lightning/uiObjectInfoApi';
 import { getRecord, updateRecord } from 'lightning/uiRecordApi';
 import {
-  ScenarioState,
-  ScenarioLayout,
-  MarkAsCompleteScenario,
-  MarkAsCurrentScenario,
-  SelectClosedScenario,
-  ChangeClosedScenario
+    ScenarioState,
+    ScenarioLayout,
+    MarkAsCompleteScenario,
+    MarkAsCurrentScenario,
+    SelectClosedScenario,
+    ChangeClosedScenario
 } from './utils';
 
 // value to assign to the last stage when user has to select a proper closed stage
@@ -93,40 +93,40 @@ export default class PathAssistant extends LightningElement {
         super();
         const token = '{0}';
         this._scenarios.push(
-          new MarkAsCompleteScenario(
-              new ScenarioLayout(
-                  'Select Closed {0}',
-                  'Mark {0} as Complete',
-                  token
-              )
-          )
-      );
+            new MarkAsCompleteScenario(
+                new ScenarioLayout(
+                    'Select Closed {0}',
+                    'Mark {0} as Complete',
+                    token
+                )
+            )
+        );
 
-      this._scenarios.push(
-          new MarkAsCurrentScenario(
-              new ScenarioLayout('', 'Mark as Current {0}', token)
-          )
-      );
+        this._scenarios.push(
+            new MarkAsCurrentScenario(
+                new ScenarioLayout('', 'Mark as Current {0}', token)
+            )
+        );
 
-      this._scenarios.push(
-          new SelectClosedScenario(
-              new ScenarioLayout(
-                  'Select Closed {0}',
-                  'Select Closed {0}',
-                  token
-              )
-          )
-      );
+        this._scenarios.push(
+            new SelectClosedScenario(
+                new ScenarioLayout(
+                    'Select Closed {0}',
+                    'Select Closed {0}',
+                    token
+                )
+            )
+        );
 
-      this._scenarios.push(
-          new ChangeClosedScenario(
-              new ScenarioLayout(
-                  'Select Closed {0}',
-                  'Change Closed {0}',
-                  token
-              )
-          )
-      );
+        this._scenarios.push(
+            new ChangeClosedScenario(
+                new ScenarioLayout(
+                    'Select Closed {0}',
+                    'Change Closed {0}',
+                    token
+                )
+            )
+        );
     }
 
     /* ========== WIRED METHODS ========== */
@@ -481,7 +481,7 @@ export default class PathAssistant extends LightningElement {
 
     // true if picklist field is empty and user didn't select any value yet
     get isUpdateButtonDisabled() {
-      return !this.currentStage.value && !this.selectedStage;
+        return !this.currentStage.value && !this.selectedStage;
     }
 
     // true if either spinner = true or component is not fully loaded
