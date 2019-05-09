@@ -396,8 +396,8 @@ export default class PathAssistant extends LightningElement {
 
     // returns only closed steps
     get closedSteps() {
-        return this.possibleSteps.filter(elem => {
-            return elem.equals(this.closedKo) || elem.equals(this.closedOk);
+        return this.possibleSteps.filter(step => {
+            return step.equals(this.closedKo) || step.equals(this.closedOk);
         });
     }
 
