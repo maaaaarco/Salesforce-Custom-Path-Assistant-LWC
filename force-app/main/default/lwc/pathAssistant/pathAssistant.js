@@ -65,7 +65,7 @@ export default class PathAssistant extends LightningElement {
     @track possibleSteps;
 
     // step selected by the user
-    @track selectedStep;
+    @track selectedStepValue;
 
     // current record's record type id
     _recordTypeId;
@@ -74,7 +74,7 @@ export default class PathAssistant extends LightningElement {
     _currentScenario;
 
     // user selected closed step
-    _selectedClosedStep;
+    _selectedClosedStepValue;
 
     // array of possible user interaction scenarios
     _scenarios = [];
@@ -194,7 +194,7 @@ export default class PathAssistant extends LightningElement {
     _setCurrentScenario() {
         const state = new ScenarioState(
             this.isClosed,
-            this.selectedStep,
+            this.selectedStepValue,
             this.currentStep.value,
             OPEN_MODAL_TO_SELECT_CLOSED_STEP
         );
@@ -257,14 +257,14 @@ export default class PathAssistant extends LightningElement {
             classText += ' slds-is-lost';
         }
 
-        if (step.equals(this.selectedStep)) {
+        if (step.equals(this.selectedStepValue)) {
             classText += ' slds-is-active';
         }
 
         if (step.equals(this.currentStep)) {
             classText += ' slds-is-current';
 
-            if (!this.selectedStep) {
+            if (!this.selectedStepValue) {
                 // if user didn't select any step this is also the active one
                 classText += ' slds-is-active';
             }
@@ -283,8 +283,8 @@ export default class PathAssistant extends LightningElement {
      */
     _resetComponentState() {
         this.record = undefined;
-        this.selectedStep = undefined;
-        this._selectedClosedStep = undefined;
+        this.selectedStepValue = undefined;
+        this._selectedClosedStepValue = undefined;
         this._currentScenario = undefined;
     }
 
@@ -456,7 +456,7 @@ export default class PathAssistant extends LightningElement {
 
     // true if picklist field is empty and user didn't select any value yet
     get isUpdateButtonDisabled() {
-        return !this.currentStep.hasValue() && !this.selectedStep;
+        return !this.currentStep.hasValue() && !this.selectedStepValue;
     }
 
     // true if either spinner = true or component is not fully loaded
@@ -484,7 +484,7 @@ export default class PathAssistant extends LightningElement {
      * @param {Event} event Change Event
      */
     setClosedStep(event) {
-        this._selectedClosedStep = event.target.value;
+        this._selectedClosedStepValue = event.target.value;
     }
 
     /**
@@ -492,7 +492,7 @@ export default class PathAssistant extends LightningElement {
      * @param {Event} event Click event
      */
     handleStepSelected(event) {
-        this.selectedStep = event.currentTarget.getAttribute('data-value');
+        this.selectedStepValue = event.currentTarget.getAttribute('data-value');
         this._setCurrentScenario();
     }
 
@@ -514,7 +514,7 @@ export default class PathAssistant extends LightningElement {
                 }
                 break;
             case MarkAsCurrentScenario:
-                this._updateRecord(this.selectedStep);
+                this._updateRecord(this.selectedStepValue);
                 break;
             case SelectClosedScenario:
             case ChangeClosedScenario:
@@ -529,11 +529,11 @@ export default class PathAssistant extends LightningElement {
      * Called when user press Save button inside the modal
      */
     handleSaveButtonClick() {
-        if (!this._selectedClosedStep) {
+        if (!this._selectedClosedStepValue) {
             return;
         }
 
-        this._updateRecord(this._selectedClosedStep);
+        this._updateRecord(this._selectedClosedStepValue);
         this.openModal = false;
     }
 }

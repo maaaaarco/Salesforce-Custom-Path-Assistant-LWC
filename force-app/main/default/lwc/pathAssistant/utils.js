@@ -1,4 +1,3 @@
-'use strict';
 /**
  * Defines possible user interaction scenarios.
  * Note: all hard coded text inside the layout elements can be replaced
