@@ -7,18 +7,17 @@
  * Used only on RecordPages, this component is fully aware of it's context.
  */
 import { LightningElement, api, wire, track } from 'lwc';
-import {
-    getObjectInfo,
-    getPicklistValuesByRecordType
-} from 'lightning/uiObjectInfoApi';
-import { getRecord, updateRecord } from 'lightning/uiRecordApi';
+import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
+import { updateRecord, getRecordUi } from 'lightning/uiRecordApi';
 import {
     ScenarioState,
     ScenarioLayout,
     MarkAsCompleteScenario,
     MarkAsCurrentScenario,
     SelectClosedScenario,
-    ChangeClosedScenario
+    ChangeClosedScenario,
+    getMasterRecordTypeId,
+    getRecordTypeId
 } from './utils';
 
 // value to assign to the last stage when user has to select a proper closed stage
@@ -92,6 +91,9 @@ export default class PathAssistant extends LightningElement {
     constructor() {
         super();
         const token = '{0}';
+
+        // note: all the hard coded strings passed to ScenarioLayout can be replaced with Custom Labels
+
         this._scenarios.push(
             new MarkAsCompleteScenario(
                 new ScenarioLayout(
@@ -131,51 +133,33 @@ export default class PathAssistant extends LightningElement {
 
     /* ========== WIRED METHODS ========== */
 
-    // loads current object metadata info
-    @wire(getObjectInfo, { objectApiName: '$objectApiName' })
-    wiredObjectInfo({ error, data }) {
+    @wire(getRecordUi, {
+        recordIds: '$recordId',
+        layoutTypes: 'Full',
+        modes: 'View'
+    })
+    wiredRecordUI({ error, data }) {
         if (error) {
             this.errorMsg = error.body.message;
         }
 
-        if (data) {
-            this.objectInfo = data;
+        if (data && data.records[this.recordId]) {
+            // set the record
+            this.record = data.records[this.recordId];
 
-            // get picklist field label
-            this._picklistFieldLabel = data.fields[this.picklistField].label;
+            // set the object info
+            this.objectInfo = data.objectInfos[this.objectApiName];
 
-            // get master record type id
-            for (let rtId in data.recordTypeInfos) {
-                if (data.recordTypeInfos[rtId].master) {
-                    this._masterRecordTypeId =
-                        data.recordTypeInfos[rtId].recordTypeId;
-                    break;
-                }
-            }
+            // get picklist field's label
+            this._picklistFieldLabel = this.objectInfo.fields[
+                this.picklistField
+            ].label;
 
-            if (this.record && !this._recordTypeId) {
-                // current record doesn't have a record type, set master as current record type
-                this._recordTypeId = this._masterRecordTypeId;
-            }
-        }
-    }
-
-    // load current record
-    @wire(getRecord, { recordId: '$recordId', layoutTypes: ['Full'] })
-    wiredRecord({ error, data }) {
-        if (error) {
-            this.errorMsg = error.body.message;
-        }
-
-        if (data) {
-            this.record = data;
-
-            if (data.fields.RecordTypeId) {
-                this._recordTypeId = data.fields.RecordTypeId.value;
-            } else if (this._masterRecordTypeId) {
-                // set the master as current record type
-                this._recordTypeId = this._masterRecordTypeId;
-            }
+            // set the current record type
+            const rtId = getRecordTypeId(this.record);
+            this._recordTypeId = rtId
+                ? rtId
+                : getMasterRecordTypeId(this.objectInfo);
         }
     }
 
@@ -451,7 +435,7 @@ export default class PathAssistant extends LightningElement {
 
     // returns the label for the select input field inside the modal
     get selectLabel() {
-        return this.objectInfo.fields[this.picklistField].label;
+        return this._picklistFieldLabel;
     }
 
     // true if current record reached a closed stage
