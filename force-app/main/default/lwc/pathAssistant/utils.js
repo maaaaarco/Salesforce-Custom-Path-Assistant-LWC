@@ -142,7 +142,7 @@ export class Step {
     }
 
     /**
-     * Returns true if current instance has a lower index value than the other one  
+     * Returns true if current instance has a lower index value than the other one
      * @param {Step} otherStep Step instance to compare
      */
     isBefore(otherStep) {
@@ -150,7 +150,7 @@ export class Step {
     }
 
     /**
-     * Returns true if current instance has a greater index value than the other one  
+     * Returns true if current instance has a greater index value than the other one
      * @param {Step} otherStep Step instance to compare
      */
     isAfter(otherStep) {
@@ -158,7 +158,7 @@ export class Step {
     }
 
     /**
-     * Returns true if current instance has same index value than the other one  
+     * Returns true if current instance has same index value than the other one
      * @param {Step} otherStep Step instance to compare
      */
     isSame(otherStep) {
@@ -168,7 +168,6 @@ export class Step {
     hasValue() {
         return !!this.value;
     }
-
 }
 
 /**

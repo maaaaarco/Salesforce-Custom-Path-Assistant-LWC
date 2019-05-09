@@ -22,8 +22,7 @@ import {
 } from './utils';
 
 // value to assign to the last step when user has to select a proper closed step
-const OPEN_MODAL_TO_SELECT_CLOSED_STEP =
-    'pathAssistant_selectAClosedStepValue';
+const OPEN_MODAL_TO_SELECT_CLOSED_STEP = 'pathAssistant_selectAClosedStepValue';
 
 export default class PathAssistant extends LightningElement {
     // current object api name
@@ -381,7 +380,11 @@ export default class PathAssistant extends LightningElement {
         } else {
             // record didn't reach a closed step
             // create a fake one that will allow users to pick either the closedOk or closedKo
-            lastStep = new Step(OPEN_MODAL_TO_SELECT_CLOSED_STEP, this.lastStepLabel, Infinity);
+            lastStep = new Step(
+                OPEN_MODAL_TO_SELECT_CLOSED_STEP,
+                this.lastStepLabel,
+                Infinity
+            );
         }
 
         lastStep.setClassText(this._getStepElementCssClass(lastStep));
