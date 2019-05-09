@@ -67,14 +67,8 @@ export default class PathAssistant extends LightningElement {
     // stage selected by the user
     @track selectedStage;
 
-    // picklist field's label
-    _picklistFieldLabel;
-
     // current record's record type id
     _recordTypeId;
-
-    // master record type of the object
-    _masterRecordTypeId;
 
     // action that can be performed by the user
     _currentScenario;
@@ -149,11 +143,6 @@ export default class PathAssistant extends LightningElement {
 
             // set the object info
             this.objectInfo = data.objectInfos[this.objectApiName];
-
-            // get picklist field's label
-            this._picklistFieldLabel = this.objectInfo.fields[
-                this.picklistField
-            ].label;
 
             // set the current record type
             const rtId = getRecordTypeId(this.record);
@@ -419,7 +408,7 @@ export default class PathAssistant extends LightningElement {
     get updateButtonText() {
         return this._currentScenario
             ? this._currentScenario.layout.getUpdateButtonText(
-                  this._picklistFieldLabel
+                  this.picklistFieldLabel
               )
             : '';
     }
@@ -428,14 +417,19 @@ export default class PathAssistant extends LightningElement {
     get modalHeader() {
         return this._currentScenario
             ? this._currentScenario.layout.getModalHeader(
-                  this._picklistFieldLabel
+                  this.picklistFieldLabel
               )
             : '';
     }
 
     // returns the label for the select input field inside the modal
     get selectLabel() {
-        return this._picklistFieldLabel;
+        return this.picklistFieldLabel;
+    }
+
+    // returns the label of the picklist field used to render the path
+    get picklistFieldLabel() {
+        return this.objectInfo.fields[this.picklistField].label;
     }
 
     // true if current record reached a closed stage
