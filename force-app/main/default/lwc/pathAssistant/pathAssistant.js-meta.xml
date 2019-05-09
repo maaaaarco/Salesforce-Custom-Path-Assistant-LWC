@@ -2,16 +2,16 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata" fqn="pathAssistant">
     <apiVersion>45.0</apiVersion>
     <isExposed>true</isExposed>
-    <description>Custom path assistant. Provides closed stages feature</description>
+    <description>Custom path assistant. Provides closed steps feature</description>
     <targets>
         <target>lightning__RecordPage</target>
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
             <property name="picklistField" label="Picklist Field" required="true" type="String" description="Picklist field's API name used to render the path. This field must be included in page layouts" />
-            <property name="closedOk" label="Closed OK stage" required="true" type="String" description="Picklist value that represents a closed ok stage. When selected will render a green progress bar." />
-            <property name="closedKo" label="Closed KO stage" required="true" type="String" description="Picklist value that represents a closed not ok stage. When selected will render a red progress bar." />
-            <property name="lastStageLabel" label="Label of last stage" required="true" type="String" description="Label to give to the last stage when user has to select one between Closed OK and Closed KO stage." />
+            <property name="closedOk" label="Closed OK step" required="true" type="String" description="Picklist value that represents a closed ok step. When selected will render a green progress bar." />
+            <property name="closedKo" label="Closed KO step" required="true" type="String" description="Picklist value that represents a closed not ok step. When selected will render a red progress bar." />
+            <property name="lastStepLabel" label="Label of last step" required="true" type="String" description="Label to give to the last step when user has to select one between Closed OK and Closed KO step." />
             <property name="hideUpdateButton" label="Hide update button" type="Boolean" />
         </targetConfig>
     </targetConfigs>

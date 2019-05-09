@@ -44,7 +44,7 @@
                                 role="listbox"
                                 aria-orientation="horizontal"
                             >
-                                <template for:each={stages} for:item="step">
+                                <template for:each={steps} for:item="step">
                                     <li
                                         key={step.value}
                                         class={step.classText}
@@ -57,7 +57,7 @@
                                             role="option"
                                             tabindex="-1"
                                             data-value={step.value}
-                                            onclick={handleStageSelected}
+                                            onclick={handleStepSelected}
                                         >
                                             <span class="slds-path__stage">
                                                 <lightning-icon
@@ -106,7 +106,7 @@
         </div>
     </article>
 
-    <!-- modal to select a closed stage -->
+    <!-- modal to select a closed step -->
     <section
         if:true={openModal}
         role="dialog"
@@ -152,17 +152,17 @@
                                 class="slds-select"
                                 id="select-01"
                                 required=""
-                                onchange={setClosedStage}
+                                onchange={setClosedStep}
                             >
                                 <option value="">--- None ---</option>
                                 <template
-                                    for:each={closedStages}
-                                    for:item="stage"
+                                    for:each={closedSteps}
+                                    for:item="step"
                                 >
                                     <option
-                                        key={stage.index}
-                                        value={stage.value}
-                                        >{stage.label}</option
+                                        key={step.index}
+                                        value={step.value}
+                                        >{step.label}</option
                                     >
                                 </template>
                             </select>

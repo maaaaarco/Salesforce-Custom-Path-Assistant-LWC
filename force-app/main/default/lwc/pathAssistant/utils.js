@@ -107,12 +107,68 @@ export class Step {
     value;
     label;
     index;
+    classText;
 
     constructor(value, label, index) {
         this.value = value;
         this.label = label;
         this.index = index;
     }
+
+    /**
+     * Returns true if current Step instance has same value property as the other one.
+     * In case otherStep is a string compares current instance value property with the string value
+     * @param {Step|string} otherStep Other step to compare to. Can be an instance of Step or a string.
+     */
+    equals(otherStep) {
+        if (!otherStep) {
+            return false;
+        }
+
+        if (otherStep instanceof Step) {
+            return this.value === otherStep.value;
+        }
+
+        if (typeof otherStep === 'string' || otherStep instanceof String) {
+            // eslint-disable-next-line eqeqeq
+            return this.value == otherStep;
+        }
+
+        return false;
+    }
+
+    setClassText(val) {
+        this.classText = val;
+    }
+
+    /**
+     * Returns true if current instance has a lower index value than the other one  
+     * @param {Step} otherStep Step instance to compare
+     */
+    isBefore(otherStep) {
+        return this.index < otherStep.index;
+    }
+
+    /**
+     * Returns true if current instance has a greater index value than the other one  
+     * @param {Step} otherStep Step instance to compare
+     */
+    isAfter(otherStep) {
+        return this.index > otherStep.index;
+    }
+
+    /**
+     * Returns true if current instance has same index value than the other one  
+     * @param {Step} otherStep Step instance to compare
+     */
+    isSame(otherStep) {
+        return this.index === otherStep.index;
+    }
+
+    hasValue() {
+        return !!this.value;
+    }
+
 }
 
 /**

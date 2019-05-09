@@ -16,13 +16,14 @@ import {
     MarkAsCurrentScenario,
     SelectClosedScenario,
     ChangeClosedScenario,
+    Step,
     getMasterRecordTypeId,
     getRecordTypeId
 } from './utils';
 
-// value to assign to the last stage when user has to select a proper closed stage
-const OPEN_MODAL_TO_SELECT_CLOSED_STAGE =
-    'pathAssistant_selectAClosedStageValue';
+// value to assign to the last step when user has to select a proper closed step
+const OPEN_MODAL_TO_SELECT_CLOSED_STEP =
+    'pathAssistant_selectAClosedStepValue';
 
 export default class PathAssistant extends LightningElement {
     // current object api name
@@ -34,14 +35,14 @@ export default class PathAssistant extends LightningElement {
     // picklist field's API name used to render the path assistant
     @api picklistField;
 
-    // closed OK stage. When selected will render a green progress bar
+    // closed OK step value. When selected will render a green progress bar
     @api closedOk;
 
-    // closed KO stage. When selected will render a red progress bar
+    // closed KO step value. When selected will render a red progress bar
     @api closedKo;
 
-    // label to give the last stage
-    @api lastStageLabel;
+    // label to give the last step
+    @api lastStepLabel;
 
     // show/hide the update button
     @api hideUpdateButton;
@@ -49,7 +50,7 @@ export default class PathAssistant extends LightningElement {
     // show/hide a loading spinner
     @track spinner = false;
 
-    // show/hide the modal to select a closed stage
+    // show/hide the modal to select a closed step
     @track openModal = false;
 
     // current object metadata info
@@ -62,10 +63,10 @@ export default class PathAssistant extends LightningElement {
     @track errorMsg;
 
     // available picklist values for current record (based on record type)
-    @track picklistValues;
+    @track possibleSteps;
 
-    // stage selected by the user
-    @track selectedStage;
+    // step selected by the user
+    @track selectedStep;
 
     // current record's record type id
     _recordTypeId;
@@ -73,8 +74,8 @@ export default class PathAssistant extends LightningElement {
     // action that can be performed by the user
     _currentScenario;
 
-    // user selected closed stage
-    _selectedClosedStage;
+    // user selected closed step
+    _selectedClosedStep;
 
     // array of possible user interaction scenarios
     _scenarios = [];
@@ -169,20 +170,15 @@ export default class PathAssistant extends LightningElement {
 
         if (data) {
             if (data.picklistFieldValues[this.picklistField]) {
-                // stores picklist values
-                this.picklistValues = data.picklistFieldValues[
+                // stores possible steps
+                this.possibleSteps = data.picklistFieldValues[
                     this.picklistField
                 ].values.map((elem, idx) => {
-                    // add the index property to each item
-                    return {
-                        value: elem.value,
-                        label: elem.label,
-                        index: idx
-                    };
+                    return new Step(elem.value, elem.label, idx);
                 });
 
                 // checks that required values are included
-                this._validateValues();
+                this._validateSteps();
             } else {
                 this.errorMsg = `Impossible to load ${
                     this.picklistField
@@ -199,9 +195,9 @@ export default class PathAssistant extends LightningElement {
     _setCurrentScenario() {
         const state = new ScenarioState(
             this.isClosed,
-            this.selectedStage,
-            this.currentStage.value,
-            OPEN_MODAL_TO_SELECT_CLOSED_STAGE
+            this.selectedStep,
+            this.currentStep.value,
+            OPEN_MODAL_TO_SELECT_CLOSED_STEP
         );
 
         for (let idx in this._scenarios) {
@@ -217,11 +213,11 @@ export default class PathAssistant extends LightningElement {
      * ClosedOk and ClosedKo values should be available together at least with another
      * value.
      */
-    _validateValues() {
+    _validateSteps() {
         let isClosedOkAvailable = false;
         let isClosedKoAvailable = false;
 
-        this.picklistValues.forEach(elem => {
+        this.possibleSteps.forEach(elem => {
             isClosedKoAvailable |= elem.value === this.closedKo;
             isClosedOkAvailable |= elem.value === this.closedOk;
         });
@@ -229,17 +225,17 @@ export default class PathAssistant extends LightningElement {
         if (!isClosedOkAvailable) {
             this.errorMsg = `${
                 this.closedOk
-            } stage is not available for record type ${this._recordTypeId}`;
+            } value is not available for record type ${this._recordTypeId}`;
         }
 
         if (!isClosedKoAvailable) {
             this.errorMsg = `${
                 this.closedKo
-            } stage is not available for record type ${this._recordTypeId}`;
+            } value is not available for record type ${this._recordTypeId}`;
         }
 
-        // checks stages contains at least three items (starting stage plus the two closed ones)
-        if (this.picklistValues.length < 3) {
+        // checks steps contains at least three items (starting step plus the two closed ones)
+        if (this.possibleSteps.length < 3) {
             // note: should I make this configurable?
             this.errorMsg = `Not enough picklist values are available for record type ${
                 this._recordTypeId
@@ -248,32 +244,32 @@ export default class PathAssistant extends LightningElement {
     }
 
     /**
-     * Given a stage element returns the css class to apply in the rendered html element
-     * @param {Object} elem Stage element
+     * Given a step returns the css class to apply in the rendered html element
+     * @param {Object} step Step instance
      */
-    _getStageElementCssClass(stage) {
+    _getStepElementCssClass(step) {
         let classText = 'slds-path__item';
 
-        if (stage.value === this.closedOk) {
+        if (step.equals(this.closedOk)) {
             classText += ' slds-is-won';
         }
 
-        if (stage.value === this.closedKo) {
+        if (step.equals(this.closedKo)) {
             classText += ' slds-is-lost';
         }
 
-        if (stage.value === this.selectedStage) {
+        if (step.equals(this.selectedStep)) {
             classText += ' slds-is-active';
         }
 
-        if (stage.value === this.currentStage.value) {
+        if (step.equals(this.currentStep)) {
             classText += ' slds-is-current';
 
-            if (!this.selectedStage) {
-                // if user didn't select any stage this is also the active one
+            if (!this.selectedStep) {
+                // if user didn't select any step this is also the active one
                 classText += ' slds-is-active';
             }
-        } else if (stage.index < this.currentStage.index && !this.isClosedKo) {
+        } else if (step.isBefore(this.currentStep) && !this.isClosedKo) {
             classText += ' slds-is-complete';
         } else {
             // not yet completed or closedKo
@@ -288,16 +284,16 @@ export default class PathAssistant extends LightningElement {
      */
     _resetComponentState() {
         this.record = undefined;
-        this.selectedStage = undefined;
-        this._selectedClosedStage = undefined;
+        this.selectedStep = undefined;
+        this._selectedClosedStep = undefined;
         this._currentScenario = undefined;
     }
 
     /**
-     * Update current record with the specified stage.
-     * @param {String} stage Stage to set on current record
+     * Update current record with the specified step.
+     * @param {String} stepValue Step value to set on current record
      */
-    _updateRecord(stage) {
+    _updateRecord(stepValue) {
         // format the record for update call
         let toUpdate = {
             fields: {
@@ -305,8 +301,8 @@ export default class PathAssistant extends LightningElement {
             }
         };
 
-        // set stage field to new stage
-        toUpdate.fields[this.picklistField] = stage;
+        // set new field value
+        toUpdate.fields[this.picklistField] = stepValue;
 
         // starts spinner
         this.spinner = true;
@@ -328,79 +324,77 @@ export default class PathAssistant extends LightningElement {
     /* ========== GETTER METHODS ========== */
 
     // returns current step of path assistant
-    get currentStage() {
-        for (let idx in this.picklistValues) {
+    get currentStep() {
+        for (let idx in this.possibleSteps) {
             if (
-                this.picklistValues[idx].value ===
-                this.record.fields[this.picklistField].value
+                this.possibleSteps[idx].equals(
+                    this.record.fields[this.picklistField].value
+                )
             ) {
-                return this.picklistValues[idx];
+                return this.possibleSteps[idx];
             }
         }
-        return {};
+        // empty step
+        return new Step();
     }
 
-    // returns next stage
-    get nextStage() {
-        return this.picklistValues[this.currentStage.index + 1];
+    // returns next step
+    get nextStep() {
+        return this.possibleSteps[this.currentStep.index + 1];
     }
 
-    // get progress bar stages
-    get stages() {
+    // get progress bar steps
+    get steps() {
         let closedOkElem;
         let closedKoElem;
 
         // makes a copy of picklistValues. This is because during rendering phase we cannot alter the status of a tracked variable
-        const picklistValues = JSON.parse(JSON.stringify(this.picklistValues));
+        // const possibleSteps = JSON.parse(JSON.stringify(this.possibleSteps));
 
-        let res = picklistValues
-            .filter(elem => {
-                // filters out closed stages
-                if (elem.value === this.closedOk) {
-                    closedOkElem = elem;
+        let res = this.possibleSteps
+            .filter(step => {
+                // filters out closed steps
+                if (step.equals(this.closedOk)) {
+                    closedOkElem = step;
                     return false;
                 }
 
-                if (elem.value === this.closedKo) {
-                    closedKoElem = elem;
+                if (step.equals(this.closedKo)) {
+                    closedKoElem = step;
                     return false;
                 }
 
                 return true;
             })
-            .map(elem => {
+            .map(step => {
                 // adds the classText property used to render correctly the element
-                elem.classText = this._getStageElementCssClass(elem);
-                return elem;
+                step.setClassText(this._getStepElementCssClass(step));
+                return step;
             });
 
-        let lastStage;
+        let lastStep;
 
         if (this.isClosedOk) {
-            lastStage = closedOkElem;
+            lastStep = closedOkElem;
         } else if (this.isClosedKo) {
-            lastStage = closedKoElem;
+            lastStep = closedKoElem;
         } else {
-            // record didn't reach a closed stage
+            // record didn't reach a closed step
             // create a fake one that will allow users to pick either the closedOk or closedKo
-            lastStage = {
-                label: this.lastStageLabel,
-                value: OPEN_MODAL_TO_SELECT_CLOSED_STAGE,
-                index: Infinity
-            };
+            lastStep = new Step(OPEN_MODAL_TO_SELECT_CLOSED_STEP, this.lastStepLabel, Infinity);
         }
 
-        lastStage.classText = this._getStageElementCssClass(lastStage);
+        lastStep.setClassText(this._getStepElementCssClass(lastStep));
 
-        res.push(lastStage);
+        res.push(lastStep);
 
         return res;
     }
 
-    // returns only closed stages
-    get closedStages() {
-        return this.picklistValues.filter(elem => {
-            return elem.value === this.closedKo || elem.value === this.closedOk;
+    // returns only closed steps
+    get closedSteps() {
+        return this.possibleSteps.filter(elem => {
+            return elem.equals(this.closedKo) || elem.equals(this.closedOk);
         });
     }
 
@@ -432,24 +426,24 @@ export default class PathAssistant extends LightningElement {
         return this.objectInfo.fields[this.picklistField].label;
     }
 
-    // true if current record reached a closed stage
+    // true if current record reached a closed step
     get isClosed() {
         return this.isClosedKo || this.isClosedOk;
     }
 
     // true if current record was closed OK
     get isClosedOk() {
-        return this.currentStage.value === this.closedOk;
+        return this.currentStep.equals(this.closedOk);
     }
 
     // true if current record was closed KO
     get isClosedKo() {
-        return this.currentStage.value === this.closedKo;
+        return this.currentStep.equals(this.closedKo);
     }
 
     // true when all required data is loaded
     get isLoaded() {
-        const res = this.record && this.objectInfo && this.picklistValues;
+        const res = this.record && this.objectInfo && this.possibleSteps;
         if (res && !this._currentScenario) {
             // when fully loaded initialize the action
             this._setCurrentScenario();
@@ -459,7 +453,7 @@ export default class PathAssistant extends LightningElement {
 
     // true if picklist field is empty and user didn't select any value yet
     get isUpdateButtonDisabled() {
-        return !this.currentStage.value && !this.selectedStage;
+        return !this.currentStep.hasValue() && !this.selectedStep;
     }
 
     // true if either spinner = true or component is not fully loaded
@@ -483,19 +477,19 @@ export default class PathAssistant extends LightningElement {
     }
 
     /**
-     * Called when user selects a value for the closed stage
+     * Called when user selects a value for the closed step
      * @param {Event} event Change Event
      */
-    setClosedStage(event) {
-        this._selectedClosedStage = event.target.value;
+    setClosedStep(event) {
+        this._selectedClosedStep = event.target.value;
     }
 
     /**
-     * Called when user clicks on a stage
+     * Called when user clicks on a step
      * @param {Event} event Click event
      */
-    handleStageSelected(event) {
-        this.selectedStage = event.currentTarget.getAttribute('data-value');
+    handleStepSelected(event) {
+        this.selectedStep = event.currentTarget.getAttribute('data-value');
         this._setCurrentScenario();
     }
 
@@ -506,18 +500,18 @@ export default class PathAssistant extends LightningElement {
         switch (this._currentScenario.constructor) {
             case MarkAsCompleteScenario:
                 if (
-                    this.nextStage.value === this.closedKo ||
-                    this.nextStage.value === this.closedOk
+                    this.nextStep.equals(this.closedKo) ||
+                    this.nextStep.equals(this.closedOk)
                 ) {
-                    // in case next stage is a closed one open the modal
+                    // in case next step is a closed one open the modal
                     this.openModal = true;
                 } else {
                     // otherwise update the record directly
-                    this._updateRecord(this.nextStage.value);
+                    this._updateRecord(this.nextStep.value);
                 }
                 break;
             case MarkAsCurrentScenario:
-                this._updateRecord(this.selectedStage);
+                this._updateRecord(this.selectedStep);
                 break;
             case SelectClosedScenario:
             case ChangeClosedScenario:
@@ -532,11 +526,11 @@ export default class PathAssistant extends LightningElement {
      * Called when user press Save button inside the modal
      */
     handleSaveButtonClick() {
-        if (!this._selectedClosedStage) {
+        if (!this._selectedClosedStep) {
             return;
         }
 
-        this._updateRecord(this._selectedClosedStage);
+        this._updateRecord(this._selectedClosedStep);
         this.openModal = false;
     }
 }
