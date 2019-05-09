@@ -216,9 +216,9 @@ export default class PathAssistant extends LightningElement {
         let isClosedOkAvailable = false;
         let isClosedKoAvailable = false;
 
-        this.possibleSteps.forEach(elem => {
-            isClosedKoAvailable |= elem.value === this.closedKo;
-            isClosedOkAvailable |= elem.value === this.closedOk;
+        this.possibleSteps.forEach(step => {
+            isClosedKoAvailable |= step.equals(this.closedKo);
+            isClosedOkAvailable |= step.equals(this.closedOk);
         });
 
         if (!isClosedOkAvailable) {
