@@ -1,0 +1,51 @@
+{
+    "name": "custom-path-assistant",
+    "private": true,
+    "version": "0.1.0",
+    "description": "A custom Path Assistant built with LWC",
+    "scripts": {
+        "lint": "npm run lint:lwc",
+        "lint:lwc": "eslint **/lwc/**",
+        "test": "npm run lint && npm run test:unit",
+        "test:unit": "lwc-jest",
+        "test:unit:watch": "lwc-jest --watch",
+        "test:unit:debug": "lwc-jest --debug",
+        "test:unit:coverage": "lwc-jest --coverage",
+        "prettier": "prettier --write '**/*.{cmp,component,css,html,js,json,md,page,yaml,yml}'",
+        "prettier:verify": "prettier --list-different '**/*.{html,js,json,yaml,yml,md,cmp,page,component}'"
+    },
+    "author": "Maaaaarco",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/maaaaarco/Salesforce-Custom-Path-Assistant-LWC.git"
+    },
+    "engines": {
+        "node": ">= 10.13.0",
+        "npm": ">= 6.5.0"
+    },
+    "devDependencies": {
+        "@salesforce/eslint-config-lwc": "^0.3.0",
+        "@salesforce/lwc-jest": "^0.4.12",
+        "eslint": "^5.15.1",
+        "husky": "^1.3.1",
+        "lint-staged": "^8.1.5",
+        "prettier": "github:prettier/prettier",
+        "semver": "^5.5.0"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "**/*.{html,js,json,yaml,yml,md,cmp,page,component}": [
+            "prettier --write"
+        ],
+        "**/lwc/**": [
+            "eslint"
+        ],
+        "*": [
+            "git add"
+        ]
+    }
+}

@@ -1,0 +1,188 @@
+<template>
+    <!-- error alert  -->
+    <div
+        if:true={errorMsg}
+        class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
+        role="alert"
+    >
+        <span class="slds-assistive-text">error</span>
+        <span
+            class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
+            title="Description of icon when needed"
+        >
+            <lightning-icon
+                icon-name="utility:error"
+                size="small"
+            ></lightning-icon>
+        </span>
+        <h2>
+            {genericErrorMessage}
+        </h2>
+        <p>
+            {errorMsg}
+        </p>
+    </div>
+
+    <article if:false={errorMsg} class="slds-card">
+        <!-- path assistant -->
+        <div class="slds-path">
+            <div class="slds-grid slds-path__track">
+                <div class="slds-grid slds-path__scroller-container">
+                    <div class="slds-path__scroller" role="application">
+                        <div class="slds-path__scroller_inner">
+                            <!-- spinner -->
+                            <lightning-spinner
+                                variant="brand"
+                                size="small"
+                                if:true={hasToShowSpinner}
+                            >
+                            </lightning-spinner>
+
+                            <ul
+                                if:true={isLoaded}
+                                class="slds-path__nav"
+                                role="listbox"
+                                aria-orientation="horizontal"
+                            >
+                                <template for:each={steps} for:item="step">
+                                    <li
+                                        key={step.value}
+                                        class={step.classText}
+                                        role="presentation"
+                                    >
+                                        <a
+                                            aria-selected="false"
+                                            class="slds-path__link"
+                                            href="javascript:void(0);"
+                                            role="option"
+                                            tabindex="-1"
+                                            data-value={step.value}
+                                            onclick={handleStepSelected}
+                                        >
+                                            <span class="slds-path__stage">
+                                                <lightning-icon
+                                                    icon-name="utility:check"
+                                                    size="xx-small"
+                                                    variant="inverse"
+                                                ></lightning-icon>
+                                            </span>
+                                            <span class="slds-path__title"
+                                                >{step.label}</span
+                                            >
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    if:false={hideUpdateButton}
+                    class="slds-grid slds-path__action"
+                >
+                    <template if:true={isLoaded}>
+                        <!-- button enabled -->
+                        <button
+                            if:false={isUpdateButtonDisabled}
+                            type="button"
+                            class="slds-button slds-button_brand slds-path__mark-complete"
+                            onclick={handleUpdateButtonClick}
+                        >
+                            {updateButtonText}
+                        </button>
+
+                        <!-- button disabled  -->
+                        <button
+                            if:true={isUpdateButtonDisabled}
+                            type="button"
+                            class="slds-button slds-button_brand slds-path__mark-complete"
+                            disabled="disabled"
+                        >
+                            {updateButtonText}
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- modal to select a closed step -->
+    <section
+        if:true={openModal}
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+        class="slds-modal slds-fade-in-open slds-modal_small"
+    >
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button
+                    class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                    title="Close"
+                    onclick={closeModal}
+                >
+                    <lightning-icon
+                        icon-name="utility:close"
+                        variant="inverse"
+                        size="medium"
+                    ></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2
+                    id="modal-heading-01"
+                    class="slds-text-heading_medium slds-hyphenate"
+                >
+                    {modalHeader}
+                </h2>
+            </header>
+            <div
+                class="slds-modal__content slds-p-around_medium"
+                id="modal-content-id-1"
+            >
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="select-01">
+                        <abbr class="slds-required" title="required">*</abbr
+                        >{selectLabel}
+                    </label>
+                    <div class="slds-form-element__control">
+                        <div class="slds-select_container">
+                            <select
+                                class="slds-select"
+                                id="select-01"
+                                required=""
+                                onchange={setClosedStep}
+                            >
+                                <option value="">--- None ---</option>
+                                <template
+                                    for:each={closedSteps}
+                                    for:item="step"
+                                >
+                                    <option key={step.index} value={step.value}
+                                        >{step.label}</option
+                                    >
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <button
+                    class="slds-button slds-button_neutral"
+                    onclick={closeModal}
+                >
+                    Cancel
+                </button>
+                <button
+                    class="slds-button slds-button_brand"
+                    onclick={handleSaveButtonClick}
+                >
+                    Save
+                </button>
+            </footer>
+        </div>
+    </section>
+    <div if:true={openModal} class="slds-backdrop slds-backdrop_open"></div>
+</template>
