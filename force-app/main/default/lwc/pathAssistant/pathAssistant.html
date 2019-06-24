@@ -24,83 +24,85 @@
     </div>
 
     <article if:false={errorMsg} class="slds-card">
-        <!-- path assistant -->
-        <div class="slds-path">
-            <div class="slds-grid slds-path__track">
-                <div class="slds-grid slds-path__scroller-container">
-                    <div class="slds-path__scroller" role="application">
-                        <div class="slds-path__scroller_inner">
-                            <!-- spinner -->
-                            <lightning-spinner
-                                variant="brand"
-                                size="small"
-                                if:true={hasToShowSpinner}
-                            >
-                            </lightning-spinner>
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- path assistant -->
+            <div class="slds-path">
+                <div class="slds-grid slds-path__track">
+                    <div class="slds-grid slds-path__scroller-container">
+                        <div class="slds-path__scroller" role="application">
+                            <div class="slds-path__scroller_inner">
+                                <!-- spinner -->
+                                <lightning-spinner
+                                    variant="brand"
+                                    size="small"
+                                    if:true={hasToShowSpinner}
+                                >
+                                </lightning-spinner>
 
-                            <ul
-                                if:true={isLoaded}
-                                class="slds-path__nav"
-                                role="listbox"
-                                aria-orientation="horizontal"
-                            >
-                                <template for:each={steps} for:item="step">
-                                    <li
-                                        key={step.value}
-                                        class={step.classText}
-                                        role="presentation"
-                                    >
-                                        <a
-                                            aria-selected="false"
-                                            class="slds-path__link"
-                                            href="javascript:void(0);"
-                                            role="option"
-                                            tabindex="-1"
-                                            data-value={step.value}
-                                            onclick={handleStepSelected}
+                                <ul
+                                    if:true={isLoaded}
+                                    class="slds-path__nav"
+                                    role="listbox"
+                                    aria-orientation="horizontal"
+                                >
+                                    <template for:each={steps} for:item="step">
+                                        <li
+                                            key={step.value}
+                                            class={step.classText}
+                                            role="presentation"
                                         >
-                                            <span class="slds-path__stage">
-                                                <lightning-icon
-                                                    icon-name="utility:check"
-                                                    size="xx-small"
-                                                    variant="inverse"
-                                                ></lightning-icon>
-                                            </span>
-                                            <span class="slds-path__title"
-                                                >{step.label}</span
+                                            <a
+                                                aria-selected="false"
+                                                class="slds-path__link"
+                                                href="javascript:void(0);"
+                                                role="option"
+                                                tabindex="-1"
+                                                data-value={step.value}
+                                                onclick={handleStepSelected}
                                             >
-                                        </a>
-                                    </li>
-                                </template>
-                            </ul>
+                                                <span class="slds-path__stage">
+                                                    <lightning-icon
+                                                        icon-name="utility:check"
+                                                        size="xx-small"
+                                                        variant="inverse"
+                                                    ></lightning-icon>
+                                                </span>
+                                                <span class="slds-path__title"
+                                                    >{step.label}</span
+                                                >
+                                            </a>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div
-                    if:false={hideUpdateButton}
-                    class="slds-grid slds-path__action"
-                >
-                    <template if:true={isLoaded}>
-                        <!-- button enabled -->
-                        <button
-                            if:false={isUpdateButtonDisabled}
-                            type="button"
-                            class="slds-button slds-button_brand slds-path__mark-complete"
-                            onclick={handleUpdateButtonClick}
-                        >
-                            {updateButtonText}
-                        </button>
+                    <div
+                        if:false={hideUpdateButton}
+                        class="slds-grid slds-path__action"
+                    >
+                        <template if:true={isLoaded}>
+                            <!-- button enabled -->
+                            <button
+                                if:false={isUpdateButtonDisabled}
+                                type="button"
+                                class="slds-button slds-button_brand slds-path__mark-complete"
+                                onclick={handleUpdateButtonClick}
+                            >
+                                {updateButtonText}
+                            </button>
 
-                        <!-- button disabled  -->
-                        <button
-                            if:true={isUpdateButtonDisabled}
-                            type="button"
-                            class="slds-button slds-button_brand slds-path__mark-complete"
-                            disabled="disabled"
-                        >
-                            {updateButtonText}
-                        </button>
-                    </template>
+                            <!-- button disabled  -->
+                            <button
+                                if:true={isUpdateButtonDisabled}
+                                type="button"
+                                class="slds-button slds-button_brand slds-path__mark-complete"
+                                disabled="disabled"
+                            >
+                                {updateButtonText}
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
