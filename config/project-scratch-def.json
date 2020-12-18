@@ -1,19 +1,19 @@
 {
-  "orgName": "mzeuli",
-  "edition": "Developer",
-  "features": ["AuthorApex"],
-  "language": "en_US",
-  "settings": {
-    "lightningExperienceSettings": {
-      "enableS1DesktopEnabled": true
-    },
-    "securitySettings": {
-      "sessionSettings": {
-        "forceRelogin": false
-      }
-    },
-    "mobileSettings": {
-      "enableS1EncryptedStoragePref2": false
+    "orgName": "mzeuli",
+    "edition": "Developer",
+    "features": ["AuthorApex"],
+    "language": "en_US",
+    "settings": {
+        "lightningExperienceSettings": {
+            "enableS1DesktopEnabled": true
+        },
+        "securitySettings": {
+            "sessionSettings": {
+                "forceRelogin": false
+            }
+        },
+        "mobileSettings": {
+            "enableS1EncryptedStoragePref2": false
+        }
     }
-  }
 }
