@@ -240,7 +240,7 @@ export default class PathAssistant extends LightningElement {
         let isClosedOkAvailable = false;
         let isClosedKoAvailable = false;
 
-        this.possibleSteps.forEach(step => {
+        this.possibleSteps.forEach((step) => {
             isClosedKoAvailable |= step.equals(this.closedKo);
             isClosedOkAvailable |= step.equals(this.closedOk);
         });
@@ -335,7 +335,7 @@ export default class PathAssistant extends LightningElement {
                 // close spinner
                 this.spinner = false;
             })
-            .catch(error => {
+            .catch((error) => {
                 this.errorMsg = error.body.message;
                 this.spinner = false;
             });
@@ -375,7 +375,7 @@ export default class PathAssistant extends LightningElement {
         // const possibleSteps = JSON.parse(JSON.stringify(this.possibleSteps));
 
         let res = this.possibleSteps
-            .filter(step => {
+            .filter((step) => {
                 // filters out closed steps
                 if (step.equals(this.closedOk)) {
                     closedOkElem = step;
@@ -389,7 +389,7 @@ export default class PathAssistant extends LightningElement {
 
                 return true;
             })
-            .map(step => {
+            .map((step) => {
                 // adds the classText property used to render correctly the element
                 step.setClassText(this._getStepElementCssClass(step));
                 return step;
@@ -420,7 +420,7 @@ export default class PathAssistant extends LightningElement {
 
     // returns only closed steps
     get closedSteps() {
-        return this.possibleSteps.filter(step => {
+        return this.possibleSteps.filter((step) => {
             return step.equals(this.closedKo) || step.equals(this.closedOk);
         });
     }
