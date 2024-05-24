@@ -36,14 +36,17 @@
                                         lwc:if={hasToShowSpinner}
                                     >
                                     </lightning-spinner>
-    
+
                                     <ul
                                         lwc:if={isLoaded}
                                         class="slds-path__nav"
                                         role="listbox"
                                         aria-orientation="horizontal"
                                     >
-                                        <template for:each={steps} for:item="step">
+                                        <template
+                                            for:each={steps}
+                                            for:item="step"
+                                        >
                                             <li
                                                 key={step.value}
                                                 class={step.classText}
@@ -58,14 +61,17 @@
                                                     data-value={step.value}
                                                     onclick={handleStepSelected}
                                                 >
-                                                    <span class="slds-path__stage">
+                                                    <span
+                                                        class="slds-path__stage"
+                                                    >
                                                         <lightning-icon
                                                             icon-name="utility:check"
                                                             size="xx-small"
                                                             variant="inverse"
                                                         ></lightning-icon>
                                                     </span>
-                                                    <span class="slds-path__title"
+                                                    <span
+                                                        class="slds-path__title"
                                                         >{step.label}</span
                                                     >
                                                 </a>
@@ -80,7 +86,6 @@
                             class="slds-grid slds-path__action"
                         >
                             <template lwc:if={isLoaded}>
-                                
                                 <!-- button disabled  -->
                                 <button
                                     lwc:if={isUpdateButtonDisabled}
@@ -90,7 +95,7 @@
                                 >
                                     {updateButtonText}
                                 </button>
-                                
+
                                 <!-- button enabled -->
                                 <button
                                     lwc:else
@@ -100,7 +105,6 @@
                                 >
                                     {updateButtonText}
                                 </button>
-
                             </template>
                         </div>
                     </div>
@@ -108,7 +112,6 @@
             </div>
         </article>
     </template>
-    
 
     <!-- modal to select a closed step -->
     <section
