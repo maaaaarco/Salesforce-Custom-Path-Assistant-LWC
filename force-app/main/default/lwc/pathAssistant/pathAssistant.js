@@ -101,37 +101,48 @@ export default class PathAssistant extends LightningElement {
     // array of possible user interaction scenarios
     _scenarios = [];
 
+    // all hardcoded string, these can be replaced with custom label for translation
+    labels = {
+        selectClosed: 'Select Closed {0}',
+        markAsComplete: 'Mark {0} as Complete',
+        markAsCurrent: 'Mark as Current {0}',
+        changeClosed: 'Change Closed {0}',
+        genericErrorMessage: 'An unexpected error occurred. Please contact your System Administrator.'
+    }
+    
+    // this is the token that gets replaced with field label
+    _token = '{0}';
+
     /**
      * Creates possible user interaction scenarios
      */
     constructor() {
         super();
-        const token = '{0}';
 
         // note: all the hard coded strings passed to ScenarioLayout can be replaced with Custom Labels
 
         this._scenarios.push(
             new MarkAsCompleteScenario(
                 new ScenarioLayout(
-                    'Select Closed {0}',
-                    'Mark {0} as Complete',
-                    token
+                    this.labels.selectClosed,
+                    this.labels.markAsComplete,
+                    this._token
                 )
             )
         );
 
         this._scenarios.push(
             new MarkAsCurrentScenario(
-                new ScenarioLayout('', 'Mark as Current {0}', token)
+                new ScenarioLayout('', this.labels.markAsCurrent, this._token)
             )
         );
 
         this._scenarios.push(
             new SelectClosedScenario(
                 new ScenarioLayout(
-                    'Select Closed {0}',
-                    'Select Closed {0}',
-                    token
+                    this.labels.selectClosed,
+                    this.labels.selectClosed,
+                    this._token
                 )
             )
         );
@@ -139,9 +150,9 @@ export default class PathAssistant extends LightningElement {
         this._scenarios.push(
             new ChangeClosedScenario(
                 new ScenarioLayout(
-                    'Select Closed {0}',
-                    'Change Closed {0}',
-                    token
+                    this.labels.selectClosed,
+                    this.labels.changeClosed,
+                    this._token
                 )
             )
         );
@@ -492,8 +503,11 @@ export default class PathAssistant extends LightningElement {
     }
 
     get genericErrorMessage() {
-        // note: you can store this in a custom label if you need
-        return 'An unexpected error occurred. Please contact your System Administrator.';
+        return this.labels.genericErrorMessage;
+    }
+
+    get displayUpdateButton() {
+        return !this.hideUpdateButton;
     }
 
     /* ========== EVENT HANDLER METHODS ========== */
