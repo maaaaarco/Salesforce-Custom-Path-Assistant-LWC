@@ -35,11 +35,12 @@ Depending on the final status they pick these can be the results:
 ![alt text](./doc/images/failed.png 'Failed')
 
 ## Requirements
-- The picklist field, on which the path is based, has to be included in the Page Layout of the object.
-- User has to have Edit permission on the field
+
+-   The picklist field, on which the path is based, has to be included in the Page Layout of the object.
+-   User has to have Edit permission on the field
 
 ## Considerations
 
-This Lightning Web Component is fully aware of its context when added to a Record page. This means that it's not object specific and can be added on any object that has a picklist field.
-It doesn't need to use an Apex controller thanks to the _uiRecordApi_ module that provides method to update and retrieve records.
-In case your object has multiple record types the picklist values displayed are the one you enabled for it (same as standard Path Assistant).
+- This Lightning Web Component is fully aware of its context when added to a Record page. This means that it's not object specific and can be added on any object that has a picklist field.
+- It doesn't need to use an Apex controller thanks to the _uiRecordApi_ module that provides method to update and retrieve records.
+- In case your object has multiple record types the picklist values displayed are the one you enabled for it (same as standard Path Assistant).
