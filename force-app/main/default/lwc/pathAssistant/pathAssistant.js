@@ -30,9 +30,9 @@ SOFTWARE.
  *
  * Used only on RecordPages, this component is fully aware of it's context.
  */
-import { LightningElement, api, wire, track } from 'lwc';
-import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
-import { updateRecord, getRecordUi } from 'lightning/uiRecordApi';
+import { LightningElement, api, wire } from 'lwc';
+import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
+import { updateRecord, getRecord } from 'lightning/uiRecordApi';
 import {
     ScenarioState,
     ScenarioLayout,
@@ -40,9 +40,7 @@ import {
     MarkAsCurrentScenario,
     SelectClosedScenario,
     ChangeClosedScenario,
-    Step,
-    getMasterRecordTypeId,
-    getRecordTypeId
+    Step
 } from './utils';
 
 // value to assign to the last step when user has to select a proper closed step
@@ -71,25 +69,25 @@ export default class PathAssistant extends LightningElement {
     @api hideUpdateButton;
 
     // show/hide a loading spinner
-    @track spinner = false;
+    spinner = false;
 
     // show/hide the modal to select a closed step
-    @track openModal = false;
+    openModal = false;
 
     // current object metadata info
-    @track objectInfo;
+    objectInfo;
 
     // current record
-    @track record;
+    record;
 
     // error message, when set will render the error panel
-    @track errorMsg;
+    errorMsg;
 
     // available picklist values for current record (based on record type)
-    @track possibleSteps;
+    possibleSteps;
 
     // step selected by the user
-    @track selectedStepValue;
+    selectedStepValue;
 
     // current record's record type id
     _recordTypeId;
@@ -151,28 +149,33 @@ export default class PathAssistant extends LightningElement {
 
     /* ========== WIRED METHODS ========== */
 
-    @wire(getRecordUi, {
-        recordIds: '$recordId',
+    @wire(getRecord, {
+        recordId: '$recordId',
         layoutTypes: 'Full',
         modes: 'View'
     })
-    wiredRecordUI({ error, data }) {
+    wiredRecord({ error, data }) {
         if (error) {
             this.errorMsg = error.body.message;
         }
 
-        if (data && data.records[this.recordId]) {
+        if (data) {
             // set the record
-            this.record = data.records[this.recordId];
-
-            // set the object info
-            this.objectInfo = data.objectInfos[this.objectApiName];
+            this.record = data;
 
             // set the current record type
-            const rtId = getRecordTypeId(this.record);
-            this._recordTypeId = rtId
-                ? rtId
-                : getMasterRecordTypeId(this.objectInfo);
+            this._recordTypeId = data.recordTypeId;
+        }
+    }
+
+    @wire(getObjectInfo, {objectApiName: '$objectApiName'})
+    wiredObject({error, data}) {
+        if (error) {
+            this.errorMsg = error.body.message;
+        }
+
+        if (data) {
+            this.objectInfo = data;
         }
     }
 
