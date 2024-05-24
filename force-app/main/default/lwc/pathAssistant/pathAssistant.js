@@ -31,7 +31,10 @@ SOFTWARE.
  * Used only on RecordPages, this component is fully aware of it's context.
  */
 import { LightningElement, api, wire } from 'lwc';
-import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
+import {
+    getObjectInfo,
+    getPicklistValuesByRecordType
+} from 'lightning/uiObjectInfoApi';
 import { updateRecord, getRecord } from 'lightning/uiRecordApi';
 import {
     ScenarioState,
@@ -107,9 +110,10 @@ export default class PathAssistant extends LightningElement {
         markAsComplete: 'Mark {0} as Complete',
         markAsCurrent: 'Mark as Current {0}',
         changeClosed: 'Change Closed {0}',
-        genericErrorMessage: 'An unexpected error occurred. Please contact your System Administrator.'
-    }
-    
+        genericErrorMessage:
+            'An unexpected error occurred. Please contact your System Administrator.'
+    };
+
     // this is the token that gets replaced with field label
     _token = '{0}';
 
@@ -179,8 +183,8 @@ export default class PathAssistant extends LightningElement {
         }
     }
 
-    @wire(getObjectInfo, {objectApiName: '$objectApiName'})
-    wiredObject({error, data}) {
+    @wire(getObjectInfo, { objectApiName: '$objectApiName' })
+    wiredObject({ error, data }) {
         if (error) {
             this.errorMsg = error.body.message;
         }
