@@ -1,7 +1,7 @@
 /**
  MIT License
 
-Copyright (c) 2019 Marco Zeuli <marco@spaghetti.dev>;
+Copyright (c) 2024 Marco Zeuli <marco@spaghetti.dev>;
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,12 @@ SOFTWARE.
  *
  * Used only on RecordPages, this component is fully aware of it's context.
  */
-import { LightningElement, api, wire, track } from 'lwc';
-import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
-import { updateRecord, getRecordUi } from 'lightning/uiRecordApi';
+import { LightningElement, api, wire } from 'lwc';
+import {
+    getObjectInfo,
+    getPicklistValuesByRecordType
+} from 'lightning/uiObjectInfoApi';
+import { updateRecord, getRecord } from 'lightning/uiRecordApi';
 import {
     ScenarioState,
     ScenarioLayout,
@@ -40,9 +43,7 @@ import {
     MarkAsCurrentScenario,
     SelectClosedScenario,
     ChangeClosedScenario,
-    Step,
-    getMasterRecordTypeId,
-    getRecordTypeId
+    Step
 } from './utils';
 
 // value to assign to the last step when user has to select a proper closed step
@@ -71,25 +72,25 @@ export default class PathAssistant extends LightningElement {
     @api hideUpdateButton;
 
     // show/hide a loading spinner
-    @track spinner = false;
+    spinner = false;
 
     // show/hide the modal to select a closed step
-    @track openModal = false;
+    openModal = false;
 
     // current object metadata info
-    @track objectInfo;
+    objectInfo;
 
     // current record
-    @track record;
+    record;
 
     // error message, when set will render the error panel
-    @track errorMsg;
+    errorMsg;
 
     // available picklist values for current record (based on record type)
-    @track possibleSteps;
+    possibleSteps;
 
     // step selected by the user
-    @track selectedStepValue;
+    selectedStepValue;
 
     // current record's record type id
     _recordTypeId;
@@ -103,37 +104,49 @@ export default class PathAssistant extends LightningElement {
     // array of possible user interaction scenarios
     _scenarios = [];
 
+    // all hardcoded string, these can be replaced with custom label for translation
+    labels = {
+        selectClosed: 'Select Closed {0}',
+        markAsComplete: 'Mark {0} as Complete',
+        markAsCurrent: 'Mark as Current {0}',
+        changeClosed: 'Change Closed {0}',
+        genericErrorMessage:
+            'An unexpected error occurred. Please contact your System Administrator.'
+    };
+
+    // this is the token that gets replaced with field label
+    _token = '{0}';
+
     /**
      * Creates possible user interaction scenarios
      */
     constructor() {
         super();
-        const token = '{0}';
 
         // note: all the hard coded strings passed to ScenarioLayout can be replaced with Custom Labels
 
         this._scenarios.push(
             new MarkAsCompleteScenario(
                 new ScenarioLayout(
-                    'Select Closed {0}',
-                    'Mark {0} as Complete',
-                    token
+                    this.labels.selectClosed,
+                    this.labels.markAsComplete,
+                    this._token
                 )
             )
         );
 
         this._scenarios.push(
             new MarkAsCurrentScenario(
-                new ScenarioLayout('', 'Mark as Current {0}', token)
+                new ScenarioLayout('', this.labels.markAsCurrent, this._token)
             )
         );
 
         this._scenarios.push(
             new SelectClosedScenario(
                 new ScenarioLayout(
-                    'Select Closed {0}',
-                    'Select Closed {0}',
-                    token
+                    this.labels.selectClosed,
+                    this.labels.selectClosed,
+                    this._token
                 )
             )
         );
@@ -141,9 +154,9 @@ export default class PathAssistant extends LightningElement {
         this._scenarios.push(
             new ChangeClosedScenario(
                 new ScenarioLayout(
-                    'Select Closed {0}',
-                    'Change Closed {0}',
-                    token
+                    this.labels.selectClosed,
+                    this.labels.changeClosed,
+                    this._token
                 )
             )
         );
@@ -151,28 +164,33 @@ export default class PathAssistant extends LightningElement {
 
     /* ========== WIRED METHODS ========== */
 
-    @wire(getRecordUi, {
-        recordIds: '$recordId',
+    @wire(getRecord, {
+        recordId: '$recordId',
         layoutTypes: 'Full',
         modes: 'View'
     })
-    wiredRecordUI({ error, data }) {
+    wiredRecord({ error, data }) {
         if (error) {
             this.errorMsg = error.body.message;
         }
 
-        if (data && data.records[this.recordId]) {
+        if (data) {
             // set the record
-            this.record = data.records[this.recordId];
-
-            // set the object info
-            this.objectInfo = data.objectInfos[this.objectApiName];
+            this.record = data;
 
             // set the current record type
-            const rtId = getRecordTypeId(this.record);
-            this._recordTypeId = rtId
-                ? rtId
-                : getMasterRecordTypeId(this.objectInfo);
+            this._recordTypeId = data.recordTypeId;
+        }
+    }
+
+    @wire(getObjectInfo, { objectApiName: '$objectApiName' })
+    wiredObject({ error, data }) {
+        if (error) {
+            this.errorMsg = error.body.message;
+        }
+
+        if (data) {
+            this.objectInfo = data;
         }
     }
 
@@ -240,7 +258,7 @@ export default class PathAssistant extends LightningElement {
         let isClosedOkAvailable = false;
         let isClosedKoAvailable = false;
 
-        this.possibleSteps.forEach(step => {
+        this.possibleSteps.forEach((step) => {
             isClosedKoAvailable |= step.equals(this.closedKo);
             isClosedOkAvailable |= step.equals(this.closedOk);
         });
@@ -335,7 +353,7 @@ export default class PathAssistant extends LightningElement {
                 // close spinner
                 this.spinner = false;
             })
-            .catch(error => {
+            .catch((error) => {
                 this.errorMsg = error.body.message;
                 this.spinner = false;
             });
@@ -375,7 +393,7 @@ export default class PathAssistant extends LightningElement {
         // const possibleSteps = JSON.parse(JSON.stringify(this.possibleSteps));
 
         let res = this.possibleSteps
-            .filter(step => {
+            .filter((step) => {
                 // filters out closed steps
                 if (step.equals(this.closedOk)) {
                     closedOkElem = step;
@@ -389,7 +407,7 @@ export default class PathAssistant extends LightningElement {
 
                 return true;
             })
-            .map(step => {
+            .map((step) => {
                 // adds the classText property used to render correctly the element
                 step.setClassText(this._getStepElementCssClass(step));
                 return step;
@@ -420,7 +438,7 @@ export default class PathAssistant extends LightningElement {
 
     // returns only closed steps
     get closedSteps() {
-        return this.possibleSteps.filter(step => {
+        return this.possibleSteps.filter((step) => {
             return step.equals(this.closedKo) || step.equals(this.closedOk);
         });
     }
@@ -489,8 +507,11 @@ export default class PathAssistant extends LightningElement {
     }
 
     get genericErrorMessage() {
-        // note: you can store this in a custom label if you need
-        return 'An unexpected error occurred. Please contact your System Administrator.';
+        return this.labels.genericErrorMessage;
+    }
+
+    get displayUpdateButton() {
+        return !this.hideUpdateButton;
     }
 
     /* ========== EVENT HANDLER METHODS ========== */

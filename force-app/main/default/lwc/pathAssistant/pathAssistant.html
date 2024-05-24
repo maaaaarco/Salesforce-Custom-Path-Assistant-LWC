@@ -1,116 +1,121 @@
 <template>
     <!-- error alert  -->
-    <div
-        if:true={errorMsg}
-        class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
-        role="alert"
-    >
-        <span class="slds-assistive-text">error</span>
-        <span
-            class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
-            title="Description of icon when needed"
+    <template lwc:if={errorMsg}>
+        <div
+            class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
+            role="alert"
         >
-            <lightning-icon
-                icon-name="utility:error"
-                size="small"
-            ></lightning-icon>
-        </span>
-        <h2>
-            {genericErrorMessage}
-        </h2>
-        <p>
-            {errorMsg}
-        </p>
-    </div>
+            <span class="slds-assistive-text">error</span>
+            <span
+                class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
+                title="Description of icon when needed"
+            >
+                <lightning-icon
+                    icon-name="utility:error"
+                    size="small"
+                ></lightning-icon>
+            </span>
+            <h2>{genericErrorMessage}</h2>
+            <p>{errorMsg}</p>
+        </div>
+    </template>
 
-    <article if:false={errorMsg} class="slds-card">
-        <div class="slds-card__body slds-card__body_inner">
-            <!-- path assistant -->
-            <div class="slds-path">
-                <div class="slds-grid slds-path__track">
-                    <div class="slds-grid slds-path__scroller-container">
-                        <div class="slds-path__scroller" role="application">
-                            <div class="slds-path__scroller_inner">
-                                <!-- spinner -->
-                                <lightning-spinner
-                                    variant="brand"
-                                    size="small"
-                                    if:true={hasToShowSpinner}
-                                >
-                                </lightning-spinner>
+    <template lwc:else>
+        <article class="slds-card">
+            <div class="slds-card__body slds-card__body_inner">
+                <!-- path assistant -->
+                <div class="slds-path">
+                    <div class="slds-grid slds-path__track">
+                        <div class="slds-grid slds-path__scroller-container">
+                            <div class="slds-path__scroller" role="application">
+                                <div class="slds-path__scroller_inner">
+                                    <!-- spinner -->
+                                    <lightning-spinner
+                                        variant="brand"
+                                        size="small"
+                                        lwc:if={hasToShowSpinner}
+                                    >
+                                    </lightning-spinner>
 
-                                <ul
-                                    if:true={isLoaded}
-                                    class="slds-path__nav"
-                                    role="listbox"
-                                    aria-orientation="horizontal"
-                                >
-                                    <template for:each={steps} for:item="step">
-                                        <li
-                                            key={step.value}
-                                            class={step.classText}
-                                            role="presentation"
+                                    <ul
+                                        lwc:if={isLoaded}
+                                        class="slds-path__nav"
+                                        role="listbox"
+                                        aria-orientation="horizontal"
+                                    >
+                                        <template
+                                            for:each={steps}
+                                            for:item="step"
                                         >
-                                            <a
-                                                aria-selected="false"
-                                                class="slds-path__link"
-                                                href="javascript:void(0);"
-                                                role="option"
-                                                tabindex="-1"
-                                                data-value={step.value}
-                                                onclick={handleStepSelected}
+                                            <li
+                                                key={step.value}
+                                                class={step.classText}
+                                                role="presentation"
                                             >
-                                                <span class="slds-path__stage">
-                                                    <lightning-icon
-                                                        icon-name="utility:check"
-                                                        size="xx-small"
-                                                        variant="inverse"
-                                                    ></lightning-icon>
-                                                </span>
-                                                <span class="slds-path__title"
-                                                    >{step.label}</span
+                                                <a
+                                                    aria-selected="false"
+                                                    class="slds-path__link"
+                                                    href="javascript:void(0);"
+                                                    role="option"
+                                                    tabindex="-1"
+                                                    data-value={step.value}
+                                                    onclick={handleStepSelected}
                                                 >
-                                            </a>
-                                        </li>
-                                    </template>
-                                </ul>
+                                                    <span
+                                                        class="slds-path__stage"
+                                                    >
+                                                        <lightning-icon
+                                                            icon-name="utility:check"
+                                                            size="xx-small"
+                                                            variant="inverse"
+                                                        ></lightning-icon>
+                                                    </span>
+                                                    <span
+                                                        class="slds-path__title"
+                                                        >{step.label}</span
+                                                    >
+                                                </a>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div
-                        if:false={hideUpdateButton}
-                        class="slds-grid slds-path__action"
-                    >
-                        <template if:true={isLoaded}>
-                            <!-- button enabled -->
-                            <button
-                                if:false={isUpdateButtonDisabled}
-                                type="button"
-                                class="slds-button slds-button_brand slds-path__mark-complete"
-                                onclick={handleUpdateButtonClick}
-                            >
-                                {updateButtonText}
-                            </button>
+                        <div
+                            lwc:if={displayUpdateButton}
+                            class="slds-grid slds-path__action"
+                        >
+                            <template lwc:if={isLoaded}>
+                                <!-- button disabled  -->
+                                <button
+                                    lwc:if={isUpdateButtonDisabled}
+                                    type="button"
+                                    class="slds-button slds-button_brand slds-path__mark-complete"
+                                    disabled="disabled"
+                                >
+                                    {updateButtonText}
+                                </button>
 
-                            <!-- button disabled  -->
-                            <button
-                                if:true={isUpdateButtonDisabled}
-                                type="button"
-                                class="slds-button slds-button_brand slds-path__mark-complete"
-                                disabled="disabled"
-                            >
-                                {updateButtonText}
-                            </button>
-                        </template>
+                                <!-- button enabled -->
+                                <button
+                                    lwc:else
+                                    type="button"
+                                    class="slds-button slds-button_brand slds-path__mark-complete"
+                                    onclick={handleUpdateButtonClick}
+                                >
+                                    {updateButtonText}
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </article>
+        </article>
+    </template>
 
     <!-- modal to select a closed step -->
     <section
-        if:true={openModal}
+        lwc:if={openModal}
         role="dialog"
         tabindex="-1"
         aria-labelledby="modal-heading-01"
@@ -161,9 +166,9 @@
                                     for:each={closedSteps}
                                     for:item="step"
                                 >
-                                    <option key={step.index} value={step.value}
-                                        >{step.label}</option
-                                    >
+                                    <option key={step.index} value={step.value}>
+                                        {step.label}
+                                    </option>
                                 </template>
                             </select>
                         </div>
@@ -186,5 +191,5 @@
             </footer>
         </div>
     </section>
-    <div if:true={openModal} class="slds-backdrop slds-backdrop_open"></div>
+    <div lwc:if={openModal} class="slds-backdrop slds-backdrop_open"></div>
 </template>

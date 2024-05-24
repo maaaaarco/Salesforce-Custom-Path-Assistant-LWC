@@ -2,9 +2,5 @@
     "orgName": "mzeuli Company",
     "edition": "Developer",
     "features": [],
-    "settings": {
-        "orgPreferenceSettings": {
-            "s1DesktopEnabled": true
-        }
-    }
+    "settings": {}
 }

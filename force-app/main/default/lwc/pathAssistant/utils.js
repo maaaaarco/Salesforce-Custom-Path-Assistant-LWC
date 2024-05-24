@@ -1,7 +1,7 @@
 /**
  MIT License
 
-Copyright (c) 2019 Marco Zeuli <marco@spaghetti.dev>;
+Copyright (c) 2024 Marco Zeuli <marco@spaghetti.dev>;
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -191,30 +191,4 @@ export class Step {
     hasValue() {
         return !!this.value;
     }
-}
-
-/**
- * Returns the object's master record type id
- * @param {Object} objectInfo Object metadata
- */
-export function getMasterRecordTypeId(objectInfo) {
-    if (objectInfo.recordTypeInfos) {
-        for (let rtId in objectInfo.recordTypeInfos) {
-            if (objectInfo.recordTypeInfos[rtId].master) {
-                return objectInfo.recordTypeInfos[rtId].recordTypeId;
-            }
-        }
-    }
-    return null;
-}
-
-/**
- * Returns the record's record type id
- * @param {Object} record SObject record
- */
-export function getRecordTypeId(record) {
-    if (record.recordTypeInfo) {
-        return record.recordTypeInfo.recordTypeId;
-    }
-    return null;
 }
