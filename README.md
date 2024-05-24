@@ -42,5 +42,6 @@ Depending on the final status they pick these can be the results:
 ## Considerations
 
 -   This Lightning Web Component is fully aware of its context when added to a Record page. This means that it's not object specific and can be added on any object that has a picklist field.
+-   You are not required to include the picklist field on the Record Page if you are using Dynamics Form, it's sufficient to include it in the Page Layout.
 -   It doesn't need to use an Apex controller thanks to the _uiRecordApi_ module that provides method to update and retrieve records.
 -   In case your object has multiple record types the picklist values displayed are the one you enabled for it (same as standard Path Assistant).
