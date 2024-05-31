@@ -1,41 +1,40 @@
 name: Pull Request to Develop
 
 on:
-  pull_request:
-    branches: [ master ]
+    pull_request:
+        branches: [master]
 
 jobs:
-  validate_pull_request:
-    runs-on: ubuntu-latest
+    validate_pull_request:
+        runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-    - name: Install Salesforce CLI
-      run: |
-        wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.xz
-        mkdir -p ~/cli/sf
-        tar xJf sfdx-linux-amd64.tar.xz -C ~/cli/sf --strip-components 1
-        export PATH=~/cli/sf/bin:$PATH
-    
-    - name: Install jq
-      run: |
-        sudo apt-get install jq
-    
-    - name: Populate auth file
-      shell: bash
-      run: 'echo ${{secrets.DEVHUB_SFDX_URL}} > ./DEVHUB_SFDX_URL.txt'
-    
-    - name: Authenticate Dev Hub
-      run: 'sf org login sfdx-url --sfdx-url-file ./DEVHUB_SFDX_URL.txt --alias devhub --set-default-dev-hub'
+            - name: Install Salesforce CLI
+              run: |
+                  wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.xz
+                  mkdir -p ~/cli/sf
+                  tar xJf sfdx-linux-amd64.tar.xz -C ~/cli/sf --strip-components 1
+                  export PATH=~/cli/sf/bin:$PATH
 
-    - name: Create scratch org
-      run: 'sf org create scratch --definition-file config/project-scratch-def.json --alias ci_scratch --set-default --duration-days 1'
-    
-    - name: Push source to scratch org
-      run: 'sf project deploy start'
-    
-    - name: Delete scratch org
-      if: always()
-      run: 'sf org delete scratch --no-prompt --target-org ci_scratch'
-      
+            - name: Install jq
+              run: |
+                  sudo apt-get install jq
+
+            - name: Populate auth file
+              shell: bash
+              run: 'echo ${{secrets.DEVHUB_SFDX_URL}} > ./DEVHUB_SFDX_URL.txt'
+
+            - name: Authenticate Dev Hub
+              run: 'sf org login sfdx-url --sfdx-url-file ./DEVHUB_SFDX_URL.txt --alias devhub --set-default-dev-hub'
+
+            - name: Create scratch org
+              run: 'sf org create scratch --definition-file config/project-scratch-def.json --alias ci_scratch --set-default --duration-days 1'
+
+            - name: Push source to scratch org
+              run: 'sf project deploy start'
+
+            - name: Delete scratch org
+              if: always()
+              run: 'sf org delete scratch --no-prompt --target-org ci_scratch'
