@@ -1,4 +1,4 @@
-name: Pull Request to Develop
+name: Pull Request to Master
 
 on:
     pull_request:
@@ -18,10 +18,6 @@ jobs:
                   tar xJf sf-linux-x64.tar.xz -C ~/cli/sf --strip-components 1
                   echo "$HOME/cli/sf/bin" >> $GITHUB_PATH
 
-            - name: Install jq
-              run: |
-                  sudo apt-get install jq
-
             - name: Populate auth file
               shell: bash
               run: 'echo ${{secrets.DEVHUB_SFDX_URL}} > ./DEVHUB_SFDX_URL.txt'
@@ -30,11 +26,12 @@ jobs:
               run: 'sf org login sfdx-url --sfdx-url-file ./DEVHUB_SFDX_URL.txt --alias devhub --set-default-dev-hub'
 
             - name: Create scratch org
+              id: create_org
               run: 'sf org create scratch --definition-file config/project-scratch-def.json --alias ci_scratch --set-default --duration-days 1'
 
             - name: Push source to scratch org
-              run: 'sf project deploy start'
+              run: 'sf project deploy start --wait 10'
 
             - name: Delete scratch org
-              if: always()
+              if: ${{ steps.create_org.outcome == 'success' }}
               run: 'sf org delete scratch --no-prompt --target-org ci_scratch'
